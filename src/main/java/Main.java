@@ -62,8 +62,14 @@ public class Main {
         if (path.equals("/")){
             httpResponse = "HTTP/1.1 200 OK\r\n\r\n";
         }else {
-            if (render.length > 1 && (path.equals("/user-agent"))) {
-//                String toRender = render[2].trim();
+            if (render.length > 2) {
+                String toRender = render[2].trim();
+                httpResponse = "HTTP/1.1 200 OK\r\n" +
+                        "Content-Type: text/plain\r\n" +
+                        "Content-Length: " + toRender.length() + "\r\n" +
+                        "\r\n" +
+                        toRender;
+            }else if ((path.equals("/user-agent"))) {
                 httpResponse = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/plain\r\n" +
                         "Content-Length: " + userAgent.length() + "\r\n" +
