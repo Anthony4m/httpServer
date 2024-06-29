@@ -38,13 +38,6 @@ public class HttpServer {
     public static void sendHttpResponse(Socket clientSocket, String path,String userAgent) throws IOException {
         OutputStream outputStream = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(outputStream, true);
-        File file = new File("\\tmp\\foo");
-        Scanner scanner = new Scanner(file);
-        String text = "";
-        while (scanner.hasNextLine()){
-            text += scanner.nextLine();
-            System.out.println(text);
-        }
         // Prepare HTTP response
         String httpResponse = "";
         String[] render = path.trim().split("/");
@@ -52,7 +45,14 @@ public class HttpServer {
             httpResponse = "HTTP/1.1 200 OK\r\n\r\n";
         }else {
             if (render.length > 2) {
-                if (render[1].equals("files") && render[2].equals("foo")){
+                if (render[1].equals("files")){
+                    File file = new File(render[2]);
+                    Scanner scanner = new Scanner(file);
+                    String text = "";
+                    while (scanner.hasNextLine()){
+                        text += scanner.nextLine();
+                        System.out.println(text);
+                    }
                     httpResponse = "HTTP/1.1 200 OK\r\n" +
                             "Content-Type: application/octet-stream\r\n" +
                             "Content-Length: " + render[1].length() + "\r\n" +
