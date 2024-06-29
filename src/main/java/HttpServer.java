@@ -52,7 +52,7 @@ public class HttpServer {
                         String text = "";
                         while (scanner.hasNextLine()) {
                             text += scanner.nextLine();
-                            System.out.println(text);
+                            System.out.println("Text is :" + text);
                         }
                         httpResponse = "HTTP/1.1 200 OK\r\n" +
                                 "Content-Type: application/octet-stream\r\n" +
