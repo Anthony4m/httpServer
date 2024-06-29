@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Main {
   public static void main(String[] args) {
@@ -46,13 +47,13 @@ public class Main {
         OutputStream outputStream = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(outputStream, true);
         // Prepare HTTP response
-        String httpResponse;
-        switch (path){
-            case "/": httpResponse = "HTTP/1.1 200 OK\r\n\r\n";
-                break;
-            default:
-                httpResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
-                break;
+        String httpResponse = "";
+        String[] render = path.trim().split("/");
+        if (render.length > 2) {
+            String toRender = render[2];
+            httpResponse = "HTTP/1.1 200 OK\r\n\r\n\r\n" + toRender;
+        }else{
+            httpResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
         }
 
 
