@@ -46,18 +46,22 @@ public class HttpServer {
         }else {
             if (render.length > 2) {
                 if (render[1].equals("files")){
-                    File file = new File(render[2]);
-                    Scanner scanner = new Scanner(file);
-                    String text = "";
-                    while (scanner.hasNextLine()){
-                        text += scanner.nextLine();
-                        System.out.println(text);
+                    try {
+                        File file = new File(render[2]);
+                        Scanner scanner = new Scanner(file);
+                        String text = "";
+                        while (scanner.hasNextLine()) {
+                            text += scanner.nextLine();
+                            System.out.println(text);
+                        }
+                        httpResponse = "HTTP/1.1 200 OK\r\n" +
+                                "Content-Type: application/octet-stream\r\n" +
+                                "Content-Length: " + render[1].length() + "\r\n" +
+                                "\r\n" +
+                                text;
+                    }catch (Exception e){
+                        httpResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
                     }
-                    httpResponse = "HTTP/1.1 200 OK\r\n" +
-                            "Content-Type: application/octet-stream\r\n" +
-                            "Content-Length: " + render[1].length() + "\r\n" +
-                            "\r\n" +
-                            text;
                 }else {
                     String toRender = render[2].trim();
                     httpResponse = "HTTP/1.1 200 OK\r\n" +
