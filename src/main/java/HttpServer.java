@@ -38,7 +38,7 @@ public class HttpServer {
     public static void sendHttpResponse(Socket clientSocket, String path,String userAgent) throws IOException {
         OutputStream outputStream = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(outputStream, true);
-        File file = new File("/tmp/foo");
+        File file = new File("\\tmp\\foo");
         Scanner scanner = new Scanner(file);
         String text = "";
         while (scanner.hasNextLine()){
