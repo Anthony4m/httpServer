@@ -51,7 +51,7 @@ public class Main {
         String[] render = path.trim().split("/");
         if (render.length > 2) {
             String toRender = render[2];
-            httpResponse = "HTTP/1.1 200 OK\r\n " + "text/plain" + "\r\n " + toRender.length() + "\r\n " + toRender;
+            httpResponse = "HTTP/1.1 200 OK\r\n" + "text/plain" + "\r\n" + toRender.length() + "\r\n" + toRender;
         }else{
             httpResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
         }
