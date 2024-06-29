@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class HttpServer {
     public static void handleHttpRequest(Socket clientSocket) throws IOException {
@@ -37,6 +38,13 @@ public class HttpServer {
     public static void sendHttpResponse(Socket clientSocket, String path,String userAgent) throws IOException {
         OutputStream outputStream = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(outputStream, true);
+        File file = new File("/docs");
+        Scanner scanner = new Scanner(file);
+        String text = "";
+        while (scanner.hasNextLine()){
+            text += scanner.nextLine();
+            System.out.println(text);
+        }
         // Prepare HTTP response
         String httpResponse = "";
         String[] render = path.trim().split("/");
@@ -44,12 +52,20 @@ public class HttpServer {
             httpResponse = "HTTP/1.1 200 OK\r\n\r\n";
         }else {
             if (render.length > 2) {
-                String toRender = render[2].trim();
-                httpResponse = "HTTP/1.1 200 OK\r\n" +
-                        "Content-Type: text/plain\r\n" +
-                        "Content-Length: " + toRender.length() + "\r\n" +
-                        "\r\n" +
-                        toRender;
+                if (render[1].equals("files") && render[2].equals("foo")){
+                    httpResponse = "HTTP/1.1 200 OK\r\n" +
+                            "Content-Type: application/octet-stream\r\n" +
+                            "Content-Length: " + render[1].length() + "\r\n" +
+                            "\r\n" +
+                            text;
+                }else {
+                    String toRender = render[2].trim();
+                    httpResponse = "HTTP/1.1 200 OK\r\n" +
+                            "Content-Type: text/plain\r\n" +
+                            "Content-Length: " + toRender.length() + "\r\n" +
+                            "\r\n" +
+                            toRender;
+                }
             }else if ((path.equals("/user-agent"))) {
                 httpResponse = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/plain\r\n" +

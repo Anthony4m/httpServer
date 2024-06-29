@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Main {
   public static void main(String[] args) {
-    System.out.println("Logs from your program will appear here!");
+    System.out.println("Listening for connections");
      ServerSocket serverSocket = null;
      Socket clientSocket = null;
 
@@ -13,10 +13,9 @@ public class Main {
        serverSocket = new ServerSocket(4221);
        serverSocket.setReuseAddress(true);
          while (true) {
-             clientSocket = serverSocket.accept(); // Wait for a client connection
+             clientSocket = serverSocket.accept();
              System.out.println("Accepted new connection from " + clientSocket.getInetAddress());
 
-             // Create a new thread to handle the client connection
              ClientHandler clientHandler = new ClientHandler(clientSocket);
              new Thread(clientHandler).start();
          }
