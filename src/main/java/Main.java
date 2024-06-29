@@ -36,14 +36,24 @@ public class Main {
                 String path = parts[1];
                 System.out.println("Method: " + method);
                 System.out.println("Path: " + path);
+                // Read the headers
+                String headerLine;
+                String userAgent = null;
+                while ((headerLine = reader.readLine()) != null && !headerLine.isEmpty()) {
+                    System.out.println("Header: " + headerLine);
+                    if (headerLine.startsWith("User-Agent:")) {
+                        userAgent = headerLine.substring(12).trim();
+                        System.out.println("User-Agent: " + userAgent);
+                    }
+                }
 
                 // Send HTTP/1.1 200 OK response
-                sendHttpResponse(clientSocket, path);
+                sendHttpResponse(clientSocket, path, userAgent);
             }
         }
     }
 
-    private static void sendHttpResponse(Socket clientSocket, String path) throws IOException {
+    private static void sendHttpResponse(Socket clientSocket, String path,String userAgent) throws IOException {
         OutputStream outputStream = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(outputStream, true);
         // Prepare HTTP response
@@ -52,13 +62,13 @@ public class Main {
         if (path.equals("/")){
             httpResponse = "HTTP/1.1 200 OK\r\n\r\n";
         }else {
-            if (render.length > 2) {
-                String toRender = render[2].trim();
+            if (render.length > 1 && (path.equals("/user-agent"))) {
+//                String toRender = render[2].trim();
                 httpResponse = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/plain\r\n" +
-                        "Content-Length: " + toRender.length() + "\r\n" +
+                        "Content-Length: " + userAgent.length() + "\r\n" +
                         "\r\n" +
-                        toRender;
+                        userAgent;
             } else {
                 httpResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
             }
