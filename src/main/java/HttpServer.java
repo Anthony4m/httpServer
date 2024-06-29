@@ -48,7 +48,7 @@ public class HttpServer {
                 if (render[1].equals("files")){
                     try {
                         File file = new File(render[2]);
-                        Scanner scanner = new Scanner(file);
+                        Scanner scanner = new Scanner("/tmp/data/codecrafters.io/http-server-tester/" + file);
                         String text = "";
                         while (scanner.hasNextLine()) {
                             text += scanner.nextLine();
