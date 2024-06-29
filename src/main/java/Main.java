@@ -12,11 +12,14 @@ public class Main {
      try {
        serverSocket = new ServerSocket(4221);
        serverSocket.setReuseAddress(true);
-       clientSocket = serverSocket.accept();
-       clientSocket.getKeepAlive();
-         // Create a new thread to handle the client connection
-         ClientHandler clientHandler = new ClientHandler(clientSocket);
-         new Thread(clientHandler).start();
+         while (true) {
+             clientSocket = serverSocket.accept(); // Wait for a client connection
+             System.out.println("Accepted new connection from " + clientSocket.getInetAddress());
+
+             // Create a new thread to handle the client connection
+             ClientHandler clientHandler = new ClientHandler(clientSocket);
+             new Thread(clientHandler).start();
+         }
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
      }
