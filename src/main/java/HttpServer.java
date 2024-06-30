@@ -56,7 +56,7 @@ public class HttpServer {
                         }
                         httpResponse = "HTTP/1.1 200 OK\r\n" +
                                 "Content-Type: application/octet-stream\r\n" +
-                                "Content-Length: " + text.length() + "\r\n" +
+                                "Content-Length: " + text.getBytes().length + "\r\n" +
                                 "\r\n" +
                                 text;
                     }catch (Exception e){
