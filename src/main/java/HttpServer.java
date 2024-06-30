@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.Scanner;
 
 public class HttpServer {
@@ -47,18 +48,17 @@ public class HttpServer {
             if (render.length > 2) {
                 if (render[1].equals("files")){
                     try {
-                        File file = new File(render[2]);
-                        Scanner scanner = new Scanner("/tmp/data/codecrafters.io/http-server-tester/" + file);
-                        String text = "";
-                        while (scanner.hasNextLine()) {
-                            text += scanner.nextLine();
-                            System.out.println("Text is :" + text);
-                        }
-                        httpResponse = "HTTP/1.1 200 OK\r\n" +
-                                "Content-Type: application/octet-stream\r\n" +
-                                "Content-Length: " + text.getBytes().length + "\r\n" +
-                                "\r\n" +
-                                text;
+                        String fileName = render[2].trim();
+                        File file = new File("/tmp/data/codecrafters.io/http-server-tester/" + fileName);
+                            byte[] fileBytes = Files.readAllBytes(file.toPath());
+                            String body = new String(fileBytes);
+
+                            httpResponse = "HTTP/1.1 200 OK\r\n" +
+                                    "Content-Type: application/octet-stream\r\n" +
+                                    "Content-Length: " + fileBytes.length + "\r\n" +
+                                    "\r\n" +
+                                    body;
+
                     }catch (Exception e){
                         httpResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
                     }
