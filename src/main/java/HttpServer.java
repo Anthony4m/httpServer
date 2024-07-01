@@ -56,9 +56,16 @@ public class HttpServer {
         PrintWriter writer = new PrintWriter(outputStream,true);
         String httpResponse = "HTTP/1.1 201 Created\r\n\r\n";
         String[] render = path.split("/");
-        FileWriter dataFile = new FileWriter(render[2]);
-        dataFile.write(body);
-        dataFile.close();
+        File file = new File("/tmp/data/codecrafters.io/http-server-tester/" + render[2].trim());
+        // Use FileWriter and BufferedWriter to write to the file
+        try (FileWriter fw = new FileWriter(file);
+             BufferedWriter bw = new BufferedWriter(fw)) {
+            // Write content to the file
+            bw.write(body);
+            System.out.println("File written successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //        System.out.println("Body: " + body);
         writer.println(httpResponse);
         writer.flush();
