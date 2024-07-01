@@ -31,7 +31,7 @@ public class HttpServer {
                         System.out.println("User-Agent: " + userAgent);
                     }
                     if (headerLine.startsWith("Content-Length")){
-                        contentLength = Integer.parseInt(headerLine.substring(16).trim());
+                        contentLength = Integer.parseInt(headerLine.substring(16).trim()) + 2;
                     }
                     if (headerLine.startsWith("Content-Type")) {
                         char[] buffer = new char[contentLength];
