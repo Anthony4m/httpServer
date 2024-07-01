@@ -22,6 +22,7 @@ public class HttpServer {
                 String headerLine;
                 String userAgent = null;
                 String data =  null;
+                int contentLength = 0;
                 StringBuilder body = new StringBuilder();
                 while ((headerLine = reader.readLine()) != null && !headerLine.isEmpty()) {
                     System.out.println("Header: " + headerLine);
@@ -29,11 +30,14 @@ public class HttpServer {
                         userAgent = headerLine.substring(12).trim();
                         System.out.println("User-Agent: " + userAgent);
                     }
-                    if (headerLine.startsWith("Content-Length")) {
-                        int contentLength = headerLine.substring(1).length();
+                    if (headerLine.startsWith("Content-Length")){
+                        contentLength = Integer.parseInt(headerLine.substring(16).trim());
+                    }
+                    if (headerLine.startsWith("Content-Type")) {
                         char[] buffer = new char[contentLength];
                         reader.read(buffer, 0, contentLength);
                         body.append(buffer);
+                        System.out.println("Body: " + body);
                         break;
                     }
                 }
