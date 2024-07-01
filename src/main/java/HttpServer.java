@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.Scanner;
 
 public class HttpServer {
     public static void handleHttpRequest(Socket clientSocket) throws IOException {
@@ -22,18 +21,47 @@ public class HttpServer {
                 // Read the headers
                 String headerLine;
                 String userAgent = null;
+                String data =  null;
+                StringBuilder body = new StringBuilder();
                 while ((headerLine = reader.readLine()) != null && !headerLine.isEmpty()) {
                     System.out.println("Header: " + headerLine);
                     if (headerLine.startsWith("User-Agent:")) {
                         userAgent = headerLine.substring(12).trim();
                         System.out.println("User-Agent: " + userAgent);
                     }
+                    if (headerLine.startsWith("Content-Length")) {
+                        int contentLength = headerLine.substring(1).length();
+                        char[] buffer = new char[contentLength];
+                        reader.read(buffer, 0, contentLength);
+                        body.append(buffer);
+                        break;
+                    }
                 }
 
-                // Send HTTP/1.1 200 OK response
-                sendHttpResponse(clientSocket, path, userAgent);
+                switch (method){
+                    case "GET":  // Send HTTP/1.1 200 OK response
+                        sendHttpResponse(clientSocket, path, userAgent);
+                        break;
+                    case "POST":
+                        handlePostRequest(clientSocket, path,body.toString().trim());
+                        break;
+                }
             }
         }
+    }
+
+
+    private static void handlePostRequest(Socket clientSocket, String path, String body) throws IOException {
+        OutputStream outputStream = clientSocket.getOutputStream();
+        PrintWriter writer = new PrintWriter(outputStream,true);
+        String httpResponse = "HTTP/1.1 201 OK\r\n\r\n";
+        String[] render = path.split("/");
+        FileWriter dataFile = new FileWriter(render[2]);
+        dataFile.write(body);
+        dataFile.close();
+//        System.out.println("Body: " + body);
+        writer.println(httpResponse);
+        writer.flush();
     }
 
     public static void sendHttpResponse(Socket clientSocket, String path,String userAgent) throws IOException {
@@ -84,4 +112,6 @@ public class HttpServer {
         writer.println(httpResponse);
         writer.flush();
     }
+
+
 }
