@@ -54,7 +54,7 @@ public class HttpServer {
     private static void handlePostRequest(Socket clientSocket, String path, String body) throws IOException {
         OutputStream outputStream = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(outputStream,true);
-        String httpResponse = "HTTP/1.1 201 OK\r\n\r\n";
+        String httpResponse = "HTTP/1.1 201 Created\r\n\r\n";
         String[] render = path.split("/");
         FileWriter dataFile = new FileWriter(render[2]);
         dataFile.write(body);
