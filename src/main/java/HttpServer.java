@@ -1,7 +1,9 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Objects;
+import java.util.zip.GZIPOutputStream;
 
 public class HttpServer {
     public static void handleHttpRequest(Socket clientSocket) throws IOException {
@@ -109,13 +111,19 @@ public class HttpServer {
                     }
                 }else {
                     String toRender = render[2].trim();
-                    if(!Objects.equals(acceptingEncoding, "")) {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream)) {
+                        gzipOutputStream.write(toRender.getBytes(StandardCharsets.UTF_8));
+                    }
+                    byte[] compressedData = byteArrayOutputStream.toByteArray();
+                    if (!Objects.equals(acceptingEncoding, "")) {
                         httpResponse = "HTTP/1.1 200 OK\r\n" +
                                 "Content-Type: text/plain\r\n" +
-                                "Content-Length: " + toRender.length() + "\r\n" +
-                                "Content-Encoding: " + acceptingEncoding + "\r\n" +
-                                "\r\n" +  // Separate headers from the body
-                                toRender;
+                                "Content-Length: " + compressedData.length + "\r\n" +
+                                "Content-Encoding: gzip\r\n" +
+                                "\r\n";
+                        outputStream.write(httpResponse.getBytes("UTF-8"));
+                        outputStream.write(compressedData);
                     }else {
                         httpResponse = "HTTP/1.1 200 OK\r\n" +
                                 "Content-Type: text/plain\r\n" +
