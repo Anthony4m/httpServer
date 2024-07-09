@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Objects;
 
 public class HttpServer {
     public static void handleHttpRequest(Socket clientSocket) throws IOException {
@@ -20,9 +21,9 @@ public class HttpServer {
                 System.out.println("Path: " + path);
                 // Read the headers
                 String headerLine;
-                String userAgent = null;
-                String data =  null;
+                String userAgent = "";
                 int contentLength = 0;
+                String acceptEncoding = "";
                 StringBuilder body = new StringBuilder();
                 while ((headerLine = reader.readLine()) != null && !headerLine.isEmpty()) {
                     System.out.println("Header: " + headerLine);
@@ -40,11 +41,16 @@ public class HttpServer {
                         System.out.println("Body: " + body);
                         break;
                     }
+                    if(headerLine.startsWith("Accept-Encoding")){
+                        acceptEncoding = headerLine.substring(17).trim();
+                        acceptEncoding = acceptEncoding.equals("invalid-encoding") ? "" : acceptEncoding;
+                        System.out.println("Content-Encoding: " + acceptEncoding);
+                    }
                 }
 
                 switch (method){
                     case "GET":  // Send HTTP/1.1 200 OK response
-                        sendHttpResponse(clientSocket, path, userAgent);
+                        sendHttpResponse(clientSocket, path, userAgent,acceptEncoding);
                         break;
                     case "POST":
                         handlePostRequest(clientSocket, path,body.toString().trim());
@@ -75,7 +81,7 @@ public class HttpServer {
         writer.flush();
     }
 
-    public static void sendHttpResponse(Socket clientSocket, String path,String userAgent) throws IOException {
+    public static void sendHttpResponse(Socket clientSocket, String path,String userAgent,String acceptingEncoding) throws IOException {
         OutputStream outputStream = clientSocket.getOutputStream();
         PrintWriter writer = new PrintWriter(outputStream, true);
         // Prepare HTTP response
@@ -103,11 +109,20 @@ public class HttpServer {
                     }
                 }else {
                     String toRender = render[2].trim();
-                    httpResponse = "HTTP/1.1 200 OK\r\n" +
-                            "Content-Type: text/plain\r\n" +
-                            "Content-Length: " + toRender.length() + "\r\n" +
-                            "\r\n" +
-                            toRender;
+                    if(!Objects.equals(acceptingEncoding, "")) {
+                        httpResponse = "HTTP/1.1 200 OK\r\n" +
+                                "Content-Type: text/plain\r\n" +
+                                "Content-Length: " + toRender.length() + "\r\n" +
+                                "Content-Encoding: " + acceptingEncoding + "\r\n" +
+                                "\r\n" +  // Separate headers from the body
+                                toRender;
+                    }else {
+                        httpResponse = "HTTP/1.1 200 OK\r\n" +
+                                "Content-Type: text/plain\r\n" +
+                                "Content-Length: " + toRender.length() + "\r\n" +
+                                "\r\n" +
+                                toRender;
+                    }
                 }
             }else if ((path.equals("/user-agent"))) {
                 httpResponse = "HTTP/1.1 200 OK\r\n" +
