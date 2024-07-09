@@ -43,7 +43,7 @@ public class HttpServer {
                     }
                     if(headerLine.startsWith("Accept-Encoding")){
                         acceptEncoding = headerLine.substring(17).trim();
-                        acceptEncoding = acceptEncoding.equals("invalid-encoding") ? "" : acceptEncoding;
+                        acceptEncoding = acceptEncoding.contains("gzip") ? "gzip" : "";
                         System.out.println("Content-Encoding: " + acceptEncoding);
                     }
                 }
